@@ -79,7 +79,7 @@ export default function OrderDetail({ order }) {
 
 export async function getStaticPaths() {
   const orders = await getOrders()
-  return { paths: orders.map(o => ({ params: { slug: o.slug } })), fallback: 'blocking' }
+  return { paths: orders.map(o => ({ params: { slug: o.slug } })), fallback: true }
 }
 
 export async function getStaticProps({ params }) {
