@@ -66,7 +66,7 @@ export default function ComicDetail({ comic }) {
 
 export async function getStaticPaths() {
   const comics = await getComics()
-  return { paths: comics.map(v => ({ params: { slug: v.slug } })), fallback: 'blocking' }
+  return { paths: comics.map(v => ({ params: { slug: v.slug } })), fallback: true }
 }
 
 export async function getStaticProps({ params }) {
