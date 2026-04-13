@@ -115,7 +115,7 @@ export default function BookDetail({ book }) {
 
 export async function getStaticPaths() {
   const books = await getBooks()
-  return { paths: books.map(b => ({ params: { slug: b.slug } })), fallback: 'blocking' }
+  return { paths: books.map(b => ({ params: { slug: b.slug } })), fallback: true }
 }
 
 export async function getStaticProps({ params }) {
