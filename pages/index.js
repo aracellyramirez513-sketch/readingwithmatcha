@@ -241,10 +241,9 @@ function ItemCard({ item, activeTag, handleTag }) {
   return null
 }
 
-export async function getStaticProps() {
+export async function getServerSideProps() {
   const { books, comics, corner, reading, orders } = await getAll()
   return {
     props: { books, comics, corner, reading, orders },
-    revalidate: 60,
   }
 }
