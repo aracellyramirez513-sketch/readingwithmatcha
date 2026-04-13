@@ -60,7 +60,7 @@ export default function CornerDetail({ post }) {
 
 export async function getStaticPaths() {
   const posts = await getCorner()
-  return { paths: posts.map(p => ({ params: { slug: p.slug } })), fallback: 'blocking' }
+  return { paths: posts.map(p => ({ params: { slug: p.slug } })), fallback: true }
 }
 
 export async function getStaticProps({ params }) {
