@@ -78,7 +78,7 @@ export default function BookDetail({ book }) {
 
           <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: '1.25rem 1.5rem', marginBottom: '1.5rem' }}>
             <p style={{ fontSize: 11, fontFamily: 'sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: '0 0 0.75rem' }}>My review</p>
-            <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.85, fontStyle: 'italic' }}>{book.review}</p>
+            <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.85, fontStyle: 'italic', whiteSpace: 'pre-wrap' }}>{book.review}</p>
           </div>
 
           {book.forWhom && (
