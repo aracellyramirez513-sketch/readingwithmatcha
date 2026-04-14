@@ -52,7 +52,7 @@ export default function BookDetail({ book }) {
 
           <div style={{ borderTop: '1px solid var(--border)', paddingTop: '1.5rem', marginBottom: '1.5rem' }}>
             <p style={{ fontSize: 11, fontFamily: 'sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: '0 0 0.75rem' }}>Synopsis</p>
-            <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.8 }}>{book.synopsis}</p>
+            <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>{book.synopsis}</p>
           </div>
 
           {protagonists.length > 0 && (
