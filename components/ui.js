@@ -73,7 +73,7 @@ export function SiteHeader() {
         A personal space where I share what I love, what moves me, and what I would recommend without hesitation.
       </p>
       <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-        {['Between books', 'Between panels', 'From my corner', 'Reading orders'].map(t => (
+        {['Reviews', 'Graphic Reads', 'The Corner', 'Reading Order'].map(t => (
           <span key={t} style={{ background: 'var(--bg-tag)', color: 'var(--text-accent)', fontSize: 12, padding: '4px 14px', borderRadius: 20, fontFamily: 'sans-serif', border: '1px solid var(--border)' }}>{t}</span>
         ))}
       </div>
