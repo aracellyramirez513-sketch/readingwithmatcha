@@ -17,7 +17,7 @@ const statusColors = {
 }
 
 const catKeys = ['all', 'review', 'comic', 'corner', 'order']
-const categories = ['All', 'Between books', 'Between panels', 'From my corner', 'Reading orders']
+const categories = ['All', 'Reviews', 'Graphic Reads', 'The Corner', 'Reading Order']
 
 export default function Home({ books, comics, corner, reading, orders }) {
   const [activeCat, setActiveCat] = useState('all')
@@ -180,7 +180,7 @@ function ItemCard({ item, activeTag, handleTag }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                 <Pill bg="#fff" color={et.color} border={et.border}>{et.label}</Pill>
-                <span style={{ fontSize: 11, color: et.color, fontFamily: 'sans-serif', opacity: 0.8 }}>From my corner</span>
+                <span style={{ fontSize: 11, color: et.color, fontFamily: 'sans-serif', opacity: 0.8 }}>The Corner</span>
               </div>
               <span style={{ fontSize: 11, color: et.color, fontFamily: 'sans-serif', opacity: 0.7 }}>{item.date}</span>
             </div>
