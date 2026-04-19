@@ -24,6 +24,9 @@ export default function Home({ books, comics, corner, reading, orders }) {
   const [activeTag, setActiveTag] = useState(null)
   const [search, setSearch] = useState('')
 
+  const featuredBook = useMemo(() => books.find(b => b.featured) || null, [books])
+  const favoriteBooks = useMemo(() => books.filter(b => b.favorite).slice(0, 5), [books])
+
   const allItems = useMemo(() => {
     const items = [...books, ...comics, ...corner, ...orders]
     return items.sort((a, b) => (b.date || '').localeCompare(a.date || ''))
@@ -55,6 +58,8 @@ export default function Home({ books, comics, corner, reading, orders }) {
     return items
   }, [allItems, activeCat, activeTag, search])
 
+  const isFiltered = activeCat !== 'all' || activeTag || search
+
   function handleTag(tag) { setActiveTag(prev => prev === tag ? null : tag) }
 
   return (
@@ -69,6 +74,14 @@ export default function Home({ books, comics, corner, reading, orders }) {
       <div className="container">
         <SiteHeader />
         <Profile />
+
+        {!isFiltered && featuredBook && (
+          <FeaturedCard book={featuredBook} />
+        )}
+
+        {!isFiltered && favoriteBooks.length > 0 && (
+          <FavoritesRow books={favoriteBooks} />
+        )}
 
         <div style={{ padding: '1.5rem 0 1rem' }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: '1.5rem' }}>
@@ -101,6 +114,55 @@ export default function Home({ books, comics, corner, reading, orders }) {
         <Footer />
       </div>
     </>
+  )
+}
+
+function FeaturedCard({ book }) {
+  return (
+    <Link href={`/resena/${book.slug}`} style={{ textDecoration: 'none' }}>
+      <div style={{ margin: '2rem 0 1rem', background: 'var(--bg-sidebar)', border: '1px solid var(--border)', borderRadius: 16, padding: '1.5rem', display: 'grid', gridTemplateColumns: '140px 1fr', gap: 20, cursor: 'pointer', transition: 'opacity 0.15s' }}
+        onMouseEnter={e => e.currentTarget.style.opacity = '0.92'}
+        onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
+        <img src={book.cover} alt={book.title}
+          style={{ width: 140, height: 200, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border-warm)' }}
+          onError={e => { e.target.style.background = 'var(--bg-tag)'; e.target.src = '' }} />
+        <div>
+          <span style={{ display: 'inline-block', background: 'var(--btn-bg)', color: '#fff', fontSize: 10, padding: '4px 12px', borderRadius: 20, fontFamily: 'sans-serif', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>★ Featured</span>
+          <h2 style={{ fontSize: 26, fontWeight: 700, margin: '0 0 4px', color: 'var(--text-dark)', lineHeight: 1.2 }}>{book.title}</h2>
+          {book.series && <p style={{ fontSize: 13, color: '#9b7b5e', margin: '0 0 4px', fontFamily: 'sans-serif', fontStyle: 'italic' }}>{book.series}{book.seriesNumber ? ` · Book ${book.seriesNumber}` : ''}</p>}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+            <p style={{ fontSize: 14, color: 'var(--text-muted)', margin: 0, fontFamily: 'sans-serif' }}>{book.author}</p>
+            <Pill>{book.category}</Pill>
+          </div>
+          <Stars n={book.rating} size={16} />
+          <p style={{ fontSize: 14, color: 'var(--text-body)', lineHeight: 1.65, margin: '10px 0 12px', display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.synopsis}</p>
+          <span style={{ fontSize: 13, color: 'var(--text-accent)', fontFamily: 'sans-serif', fontWeight: 500 }}>Read the full review →</span>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
+function FavoritesRow({ books }) {
+  return (
+    <div style={{ margin: '1.5rem 0' }}>
+      <p style={{ fontSize: 11, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--text-muted)', margin: '0 0 12px', fontFamily: 'sans-serif' }}>★ My favorites</p>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 10 }}>
+        {books.map(book => (
+          <Link key={book.id} href={`/resena/${book.slug}`} style={{ textDecoration: 'none' }}>
+            <div style={{ cursor: 'pointer', transition: 'transform 0.15s' }}
+              onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-2px)'}
+              onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
+              <img src={book.cover} alt={book.title}
+                style={{ width: '100%', aspectRatio: '2/3', objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border-warm)', marginBottom: 6 }}
+                onError={e => { e.target.style.background = 'var(--bg-tag)'; e.target.src = '' }} />
+              <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-dark)', margin: '0 0 2px', lineHeight: 1.25, fontFamily: 'Georgia,serif', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{book.title}</p>
+              <p style={{ fontSize: 10, color: 'var(--text-accent)', margin: 0, fontFamily: 'sans-serif' }}>{'★'.repeat(Math.floor(Number(book.rating) || 0))}</p>
+            </div>
+          </Link>
+        ))}
+      </div>
+    </div>
   )
 }
 
