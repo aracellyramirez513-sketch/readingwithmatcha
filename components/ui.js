@@ -34,8 +34,8 @@ const grSvg = <svg width={18} height={18} viewBox="0 0 24 24" fill="currentColor
 const amSvg = <svg width={18} height={18} viewBox="0 0 24 24" fill="currentColor"><path d="M13.958 10.09c0 1.232.029 2.256-.591 3.351-.502.891-1.301 1.438-2.186 1.438-1.214 0-1.922-.924-1.922-2.292 0-2.692 2.415-3.182 4.699-3.182v.685zm3.186 7.705c-.209.189-.512.201-.745.076-1.048-.872-1.236-1.276-1.814-2.106-1.734 1.767-2.962 2.297-5.209 2.297-2.66 0-4.731-1.642-4.731-4.928 0-2.567 1.391-4.309 3.37-5.164 1.715-.754 4.11-.891 5.942-1.095v-.41c0-.753.06-1.642-.384-2.295-.385-.579-1.124-.82-1.775-.82-1.205 0-2.277.618-2.54 1.897-.054.285-.261.566-.549.58l-3.076-.333c-.259-.056-.545-.266-.47-.66C5.96 1.848 8.807.785 11.354.785c1.303 0 3.004.346 4.031 1.332C16.618 3.23 16.5 5.103 16.5 7.139v4.806c0 1.445.599 2.08 1.163 2.86.197.277.239.606-.01.81l-2.509 2.18z"/></svg>
 
 const socialLinks = [
-  { label: 'Instagram', url: 'https://www.instagram.com/entreletrasymatcha/', svg: igSvg },
-  { label: 'TikTok',   url: 'https://www.tiktok.com/@entreletrasymatcha',    svg: ttSvg },
+  { label: 'Instagram', url: 'https://www.instagram.com/readingwithmatcha/', svg: igSvg },
+  { label: 'TikTok',   url: 'https://www.tiktok.com/@readingwithmatcha',    svg: ttSvg },
   { label: 'Goodreads',url: 'https://www.goodreads.com/ariramirez',     svg: grSvg },
   { label: 'Amazon',   url: 'https://www.amazon.com/gp/profile/amzn1.account.AF45XGBVNW75DS3DJIVHUIHJF67Q', svg: amSvg },
 ]
