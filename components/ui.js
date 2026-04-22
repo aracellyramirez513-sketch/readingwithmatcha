@@ -103,6 +103,32 @@ export function Profile() {
 export function Sidebar({ reading, search, setSearch, activeTag, allTags, handleTag }) {
   return (
     <div style={{ background: 'var(--bg-sidebar)', border: '1px solid var(--border)', borderRadius: 12, padding: '1rem', position: 'sticky', top: 16 }}>
+
+      {/* 🌌 Literary Universes — always at the top */}
+      <div style={{ marginBottom: '1.25rem' }}>
+        <p style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)', margin: '0 0 0.75rem', fontFamily: 'sans-serif' }}>🌌 Literary universes</p>
+        <Link href="/literary-universes" style={{ textDecoration: 'none' }}>
+          <div style={{
+            background: '#EEEDFE',
+            border: '1px solid #AFA9EC',
+            borderRadius: 10,
+            padding: '0.75rem',
+            cursor: 'pointer',
+            transition: 'transform 0.15s, box-shadow 0.15s'
+          }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 3px 10px rgba(60, 52, 137, 0.12)' }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}>
+            <p style={{ fontSize: 12, color: '#26215C', lineHeight: 1.5, margin: '0 0 8px' }}>
+              Explore the worlds where series connect with each other.
+            </p>
+            <span style={{ fontSize: 11, color: '#3C3489', fontFamily: 'sans-serif', fontWeight: 600 }}>
+              View all →
+            </span>
+          </div>
+        </Link>
+        <div style={{ borderTop: '1px solid var(--border)', margin: '1rem 0 0.75rem' }} />
+      </div>
+
       {reading?.length > 0 && (
         <div style={{ marginBottom: '1.25rem' }}>
           <p style={{ fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--text-muted)', margin: '0 0 0.75rem', fontFamily: 'sans-serif' }}>Currently reading</p>
