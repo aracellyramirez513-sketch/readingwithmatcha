@@ -16,8 +16,24 @@ const statusColors = {
   'Complete': { color: '#3a6a7a', bg: '#e4f0f5', border: '#aacfda' },
 }
 
-const catKeys = ['all', 'review', 'comic', 'corner', 'order']
-const categories = ['All', 'Reviews', 'Graphic Reads', 'The Corner', 'Reading Order']
+// 🌌 Lavender palette for reading orders (visually connects with universes)
+const orderColors = {
+  bg:         '#F0EDF5',
+  border:     '#C4BBD0',
+  accent:     '#6B5B8C',
+  accentDark: '#4A3F6B',
+  pillBg:     '#fff',
+  tagBg:      '#E8E2F0',
+}
+
+// 🎨 Category pill configuration with emoji + custom colors
+const catConfig = [
+  { key: 'all',     label: 'All',            emoji: '✨', bg: '#e8ede3', border: '#b0c8a0', color: '#5a7a50', activeBg: '#5a7a50' },
+  { key: 'review',  label: 'Reviews',        emoji: '📖', bg: '#e8ede3', border: '#b0c8a0', color: '#5a7a50', activeBg: '#5a7a50' },
+  { key: 'comic',   label: 'Graphic Reads',  emoji: '🎨', bg: '#e4f0f5', border: '#aacfda', color: '#3a6a7a', activeBg: '#3a6a7a' },
+  { key: 'corner',  label: 'The Corner',     emoji: '🌿', bg: '#f5ede4', border: '#d4bfaa', color: '#7a6a50', activeBg: '#7a6a50' },
+  { key: 'order',   label: 'Reading Order',  emoji: '📚', bg: '#F0EDF5', border: '#C4BBD0', color: '#6B5B8C', activeBg: '#6B5B8C' },
+]
 
 export default function Home({ books, comics, corner, reading, orders }) {
   const [activeCat, setActiveCat] = useState('all')
@@ -84,13 +100,33 @@ export default function Home({ books, comics, corner, reading, orders }) {
         )}
 
         <div style={{ padding: '1.5rem 0 1rem' }}>
+          {/* Category filter pills with emoji + color */}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: '1.5rem' }}>
-            {categories.map((cat, i) => (
-              <button key={cat} className={`btn btn-pill ${activeCat === catKeys[i] ? 'active' : ''}`}
-                onClick={() => setActiveCat(catKeys[i])}>
-                {cat}
-              </button>
-            ))}
+            {catConfig.map(cat => {
+              const isActive = activeCat === cat.key
+              return (
+                <button key={cat.key}
+                  onClick={() => setActiveCat(cat.key)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 6,
+                    padding: '6px 14px',
+                    borderRadius: 20,
+                    fontSize: 13,
+                    fontFamily: 'sans-serif',
+                    fontWeight: 500,
+                    border: `1px solid ${cat.border}`,
+                    background: isActive ? cat.activeBg : cat.bg,
+                    color: isActive ? '#fff' : cat.color,
+                    cursor: 'pointer',
+                    transition: 'all 0.15s'
+                  }}>
+                  <span style={{ fontSize: 14 }}>{cat.emoji}</span>
+                  <span>{cat.label}</span>
+                </button>
+              )
+            })}
           </div>
 
           <div className="grid-sidebar">
@@ -127,7 +163,7 @@ function FeaturedCard({ book }) {
           style={{ width: 140, height: 200, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border-warm)' }}
           onError={e => { e.target.style.background = 'var(--bg-tag)'; e.target.src = '' }} />
         <div>
-          <span style={{ display: 'inline-block', background: 'var(--btn-bg)', color: '#fff', fontSize: 10, padding: '4px 12px', borderRadius: 20, fontFamily: 'sans-serif', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>★ Featured</span>
+          <span style={{ display: 'inline-block', background: 'var(--btn-bg)', color: '#fff', fontSize: 10, padding: '4px 12px', borderRadius: 20, fontFamily: 'sans-serif', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: 10 }}>★ Featured of the month</span>
           <h2 style={{ fontSize: 26, fontWeight: 700, margin: '0 0 4px', color: 'var(--text-dark)', lineHeight: 1.2 }}>{book.title}</h2>
           {book.series && <p style={{ fontSize: 13, color: '#9b7b5e', margin: '0 0 4px', fontFamily: 'sans-serif', fontStyle: 'italic' }}>{book.series}{book.seriesNumber ? ` · Book ${book.seriesNumber}` : ''}</p>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
@@ -255,46 +291,54 @@ function ItemCard({ item, activeTag, handleTag }) {
     )
   }
 
+  // Reading order — 🌌 lavender style (connects with universes)
   if (item.type === 'order') {
     const tropes = Array.isArray(item.tropes) ? item.tropes : []
     return (
       <Link href={`/orden/${item.slug}`} style={{ textDecoration: 'none' }}>
-        <div className="card-order">
+        <div style={{
+          background: orderColors.bg,
+          border: `1px solid ${orderColors.border}`,
+          borderLeft: `4px solid ${orderColors.accent}`,
+          borderRadius: 12,
+          cursor: 'pointer',
+          transition: 'opacity 0.15s'
+        }}
+        onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
+        onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
           <div style={{ display: 'grid', gridTemplateColumns: '80px 1fr', gap: 14, padding: '1rem' }}>
             {item.sagaCover
-              ? <img src={item.sagaCover} alt={item.title} style={{ width: 80, height: 115, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border-warm)' }}
-                  onError={e => { e.target.style.background = 'var(--bg-tag)'; e.target.src = '' }} />
-              : <div style={{ width: 80, height: 115, borderRadius: 6, background: 'var(--bg-tag)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>📚</div>
+              ? <img src={item.sagaCover} alt={item.title} style={{ width: 80, height: 115, objectFit: 'cover', borderRadius: 6, border: `1px solid ${orderColors.border}` }}
+                  onError={e => { e.target.style.background = orderColors.tagBg; e.target.src = '' }} />
+              : <div style={{ width: 80, height: 115, borderRadius: 6, background: orderColors.tagBg, border: `1px solid ${orderColors.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>📚</div>
             }
             <div>
               <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
-                <Pill>{item.category}</Pill>
-                <Pill bg="#fff" color="var(--text-muted)" border="var(--border)">{item.numBooks} books</Pill>
+                {item.category && (
+                  <span style={{ fontSize: 11, padding: '2px 9px', borderRadius: 20, fontFamily: 'sans-serif', background: orderColors.pillBg, color: orderColors.accent, border: `1px solid ${orderColors.border}` }}>
+                    {item.category}
+                  </span>
+                )}
+                <span style={{ fontSize: 11, padding: '2px 9px', borderRadius: 20, fontFamily: 'sans-serif', background: orderColors.pillBg, color: orderColors.accent, border: `1px solid ${orderColors.border}` }}>
+                  {item.numBooks} books
+                </span>
               </div>
-              <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 2px', color: 'var(--text-dark)' }}>{item.title}</h3>
-              <p style={{ fontSize: 12, color: '#9b7b5e', margin: '0 0 4px', fontFamily: 'sans-serif', fontStyle: 'italic' }}>{item.author}</p>
-              {item.couple && <p style={{ fontSize: 12, color: 'var(--text-muted)', margin: '0 0 6px', fontFamily: 'sans-serif' }}>💕 {item.couple}</p>}
+              <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 2px', color: orderColors.accentDark }}>{item.title}</h3>
+              <p style={{ fontSize: 12, color: orderColors.accent, margin: '0 0 4px', fontFamily: 'sans-serif', fontStyle: 'italic' }}>{item.author}</p>
+              {item.couple && <p style={{ fontSize: 12, color: orderColors.accent, margin: '0 0 6px', fontFamily: 'sans-serif', opacity: 0.85 }}>💕 {item.couple}</p>}
               <p style={{ fontSize: 13, color: 'var(--text-body)', lineHeight: 1.6, margin: '0 0 8px', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{item.description}</p>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-                  {tropes.slice(0, 3).map(t => <Pill key={t}>{t}</Pill>)}
+                  {tropes.slice(0, 3).map(t => (
+                    <span key={t} style={{ fontSize: 11, padding: '2px 9px', borderRadius: 20, fontFamily: 'sans-serif', background: orderColors.tagBg, color: orderColors.accent, border: `1px solid ${orderColors.border}` }}>
+                      {t}
+                    </span>
+                  ))}
                 </div>
-                <span style={{ fontSize: 12, color: 'var(--text-accent)', fontFamily: 'sans-serif', whiteSpace: 'nowrap' }}>See order →</span>
+                <span style={{ fontSize: 12, color: orderColors.accent, fontFamily: 'sans-serif', whiteSpace: 'nowrap', fontWeight: 500 }}>See order →</span>
               </div>
             </div>
           </div>
-          {item.bookImages?.length > 0 && (
-            <div style={{ display: 'flex', gap: 6, padding: '0 1rem 1rem', overflowX: 'auto' }}>
-              {item.bookImages.slice(0, 8).map((img, i) => (
-                <div key={i} style={{ flexShrink: 0, position: 'relative' }}>
-                  <img src={img} alt={item.bookTitles?.[i] || `Book ${i + 1}`}
-                    style={{ width: 44, height: 64, objectFit: 'cover', borderRadius: 4, border: '1px solid var(--border-warm)' }}
-                    onError={e => { e.target.style.background = 'var(--bg-tag)'; e.target.src = '' }} />
-                  <span style={{ position: 'absolute', top: 2, left: 2, background: 'var(--btn-bg)', color: '#fff', fontSize: 9, fontFamily: 'sans-serif', borderRadius: 3, padding: '1px 4px', fontWeight: 700 }}>{i + 1}</span>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </Link>
     )
