@@ -85,7 +85,7 @@ export function Profile() {
   return (
     <div className="perfil-grid">
       <div style={{ width: 120, height: 120, borderRadius: '50%', border: '2px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}>
-        <img src="https://i.ibb.co/ZRRXh2xZ/Imagen.jpg" alt="Ari" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <img src="https://i.ibb.co/PsGG8NnG/172269ad-6c7b-429b-b6e4-164d44ec2c48.jpg" alt="Ari" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
       <div>
         <h2 style={{ fontSize: 20, fontWeight: 700, margin: '0 0 0.5rem', color: 'var(--text-dark)' }}>Hi, I'm Ari</h2>
