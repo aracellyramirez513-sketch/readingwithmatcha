@@ -195,7 +195,7 @@ function BookCard({ book, index }) {
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           {book.reviewSlug && (
-            <Link href={`/review/${book.reviewSlug}`} style={{ padding: '6px 14px', borderRadius: 6, background: 'var(--btn-bg)', color: '#fff', fontSize: 12, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
+            <Link href={`/resena/${book.reviewSlug}`} style={{ padding: '6px 14px', borderRadius: 6, background: 'var(--btn-bg)', color: '#fff', fontSize: 12, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
               Read full review →
             </Link>
           )}
