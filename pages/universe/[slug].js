@@ -103,7 +103,7 @@ function SeriesCard({ series }) {
   const numBooks = series.numBooks || 0
 
   return (
-    <Link href={`/reading-order/${series.slug}`} style={{ textDecoration: 'none' }}>
+    <Link href={`/orden/${series.slug}`} style={{ textDecoration: 'none' }}>
       <div style={{ background: 'var(--bg-card)', border: '1px solid var(--border)', borderRadius: 12, padding: '1rem', display: 'grid', gridTemplateColumns: series.sagaCover ? '90px 1fr' : '1fr', gap: 16, cursor: 'pointer', transition: 'opacity 0.15s' }}
         onMouseEnter={e => e.currentTarget.style.opacity = '0.88'}
         onMouseLeave={e => e.currentTarget.style.opacity = '1'}>
