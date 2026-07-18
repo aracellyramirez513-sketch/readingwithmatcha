@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { getAll } from '../lib/notion'
 import { Stars, Pill, SiteHeader, Profile, Sidebar, Newsletter, Footer } from '../components/ui'
 
@@ -35,10 +35,14 @@ const catConfig = [
   { key: 'order',   label: 'Reading Order',  emoji: '📚', bg: '#F0EDF5', border: '#C4BBD0', color: '#6B5B8C', activeBg: '#6B5B8C' },
 ]
 
+// 📄 How many entries are shown per page
+const PER_PAGE = 10
+
 export default function Home({ books, comics, corner, reading, orders }) {
   const [activeCat, setActiveCat] = useState('all')
   const [activeTag, setActiveTag] = useState(null)
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
 
   const featuredBook = useMemo(() => books.find(b => b.featured) || null, [books])
   const favoriteBooks = useMemo(() => books.filter(b => b.favorite).slice(0, 5), [books])
@@ -75,6 +79,29 @@ export default function Home({ books, comics, corner, reading, orders }) {
   }, [allItems, activeCat, activeTag, search])
 
   const isFiltered = activeCat !== 'all' || activeTag || search
+
+  // 📄 Pagination
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
+
+  // Reset to page 1 whenever filters change
+  useEffect(() => { setPage(1) }, [activeCat, activeTag, search])
+  // Fix the page if it ends up out of range
+  useEffect(() => { if (page > totalPages) setPage(1) }, [page, totalPages])
+
+  const pageItems = useMemo(
+    () => filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE),
+    [filtered, page]
+  )
+
+  function goToPage(p) {
+    const next = Math.min(Math.max(1, p), totalPages)
+    setPage(next)
+    if (typeof window !== 'undefined') {
+      const anchor = document.getElementById('listing')
+      if (anchor) anchor.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      else window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
 
   function handleTag(tag) { setActiveTag(prev => prev === tag ? null : tag) }
 
@@ -129,12 +156,17 @@ export default function Home({ books, comics, corner, reading, orders }) {
             })}
           </div>
 
-          <div className="grid-sidebar">
+          <div className="grid-sidebar" id="listing">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
               {filtered.length === 0
                 ? <p style={{ color: 'var(--text-muted)', fontStyle: 'italic', fontSize: 14 }}>No entries with that filter yet.</p>
-                : filtered.map((item, idx) => <ItemCard key={item.id || idx} item={item} activeTag={activeTag} handleTag={handleTag} />)
+                : pageItems.map((item, idx) => <ItemCard key={item.id || idx} item={item} activeTag={activeTag} handleTag={handleTag} />)
               }
+
+              {/* 📄 Pagination */}
+              {totalPages > 1 && (
+                <Pagination page={page} totalPages={totalPages} total={filtered.length} goToPage={goToPage} />
+              )}
             </div>
             <Sidebar reading={reading} search={search} setSearch={setSearch}
               activeTag={activeTag} allTags={allTags} handleTag={handleTag} />
@@ -345,6 +377,76 @@ function ItemCard({ item, activeTag, handleTag }) {
   }
 
   return null
+}
+
+// 📄 Pagination — ‹ 1 2 3 … › buttons
+function Pagination({ page, totalPages, total, goToPage }) {
+  const pages = useMemo(() => {
+    const out = []
+    const push = p => { if (!out.includes(p)) out.push(p) }
+    push(1)
+    for (let p = page - 1; p <= page + 1; p++) if (p > 1 && p < totalPages) push(p)
+    push(totalPages)
+    out.sort((a, b) => a - b)
+    // Insert "…" where there are gaps
+    const withGaps = []
+    out.forEach((p, i) => {
+      if (i > 0 && p - out[i - 1] > 1) withGaps.push('…')
+      withGaps.push(p)
+    })
+    return withGaps
+  }, [page, totalPages])
+
+  const baseBtn = {
+    minWidth: 34,
+    height: 34,
+    padding: '0 10px',
+    borderRadius: 8,
+    fontSize: 13,
+    fontFamily: 'sans-serif',
+    border: '1px solid var(--border)',
+    background: 'transparent',
+    color: 'var(--text-body)',
+    cursor: 'pointer',
+    transition: 'all 0.15s'
+  }
+
+  return (
+    <div style={{ marginTop: '1.5rem', paddingTop: '1.25rem', borderTop: '1px solid var(--border)' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+        <button onClick={() => goToPage(page - 1)} disabled={page === 1}
+          style={{ ...baseBtn, opacity: page === 1 ? 0.35 : 1, cursor: page === 1 ? 'default' : 'pointer' }}>
+          ‹ Previous
+        </button>
+
+        {pages.map((p, i) =>
+          p === '…'
+            ? <span key={`gap-${i}`} style={{ color: 'var(--text-muted)', fontSize: 13, padding: '0 4px', fontFamily: 'sans-serif' }}>…</span>
+            : (
+              <button key={p} onClick={() => goToPage(p)}
+                style={{
+                  ...baseBtn,
+                  fontWeight: p === page ? 700 : 400,
+                  background: p === page ? 'var(--btn-bg)' : 'transparent',
+                  color: p === page ? '#fff' : 'var(--text-body)',
+                  borderColor: p === page ? 'var(--btn-bg)' : 'var(--border)'
+                }}>
+                {p}
+              </button>
+            )
+        )}
+
+        <button onClick={() => goToPage(page + 1)} disabled={page === totalPages}
+          style={{ ...baseBtn, opacity: page === totalPages ? 0.35 : 1, cursor: page === totalPages ? 'default' : 'pointer' }}>
+          Next ›
+        </button>
+      </div>
+
+      <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', fontFamily: 'sans-serif', margin: '10px 0 0' }}>
+        Page {page} of {totalPages} · {total} {total === 1 ? 'entry' : 'entries'} in total
+      </p>
+    </div>
+  )
 }
 
 export async function getServerSideProps() {
