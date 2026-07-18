@@ -168,8 +168,11 @@ export default function Home({ books, comics, corner, reading, orders }) {
                 <Pagination page={page} totalPages={totalPages} total={filtered.length} goToPage={goToPage} />
               )}
             </div>
-            <Sidebar reading={reading} search={search} setSearch={setSearch}
-              activeTag={activeTag} allTags={allTags} handleTag={handleTag} />
+            {/* Sticky sidebar with its own scroll */}
+            <div className="sidebar-sticky">
+              <Sidebar reading={reading} search={search} setSearch={setSearch}
+                activeTag={activeTag} allTags={allTags} handleTag={handleTag} />
+            </div>
           </div>
         </div>
 
