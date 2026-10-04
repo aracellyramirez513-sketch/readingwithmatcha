@@ -7,9 +7,10 @@ export default function LiteraryUniverses({ universes }) {
   return (
     <>
       <Head>
-        <title>Literary Universes · Reading with Matcha</title>
+        <title>Literary universes: romance series in reading order | Reading with Matcha</title>
         <meta name="description" content="Explore the literary universes where books connect, with shared characters, recurring tropes, and expanded worlds." />
-        <meta property="og:title" content="Literary Universes — Reading with Matcha" />
+        <meta property="og:title" content="Literary universes: romance series in reading order | Reading with Matcha" />
+        <meta property="og:description" content="Explore the literary universes where books connect, with shared characters, recurring tropes, and expanded worlds." />
       </Head>
 
       <div className="container">
