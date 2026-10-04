@@ -7,13 +7,18 @@ export default function UniverseDetail({ universe, seriesInUniverse }) {
   if (!universe) return <div className="container"><p>Universe not found</p></div>
 
   const tropes = Array.isArray(universe.mainTropes) ? universe.mainTropes : []
+  const seoTitle = universe.author
+    ? `${universe.name}: ${universe.author} books in order | Reading with Matcha`
+    : `${universe.name}: literary universe | Reading with Matcha`
+  const seoDescription = `${universe.author ? `Literary universe by ${universe.author}.` : 'Literary universe.'}${universe.description ? ` ${universe.description}` : ''}`.replace(/\s+/g, ' ').trim()
 
   return (
     <>
       <Head>
-        <title>{universe.name} — Universe · Reading with Matcha</title>
-        <meta name="description" content={`Literary universe by ${universe.author}. ${universe.description}`} />
-        <meta property="og:title" content={`${universe.name} — Literary Universe`} />
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
         {universe.authorImage && <meta property="og:image" content={universe.authorImage} />}
       </Head>
 
