@@ -17,6 +17,14 @@ const statusInfo = {
   'Abandoned': { color: '#791F1F', bg: '#FCEBEB', border: '#F09595' },
 }
 
+// Removes the "Reading Order - " prefix that comes from Notion
+function sagaName(str) {
+  const clean = String(str || '')
+    .replace(/^\s*Reading\s+order\s*(for|of)?\s*[-–—:]\s*/i, '')
+    .trim()
+  return clean || String(str || '')
+}
+
 export default function OrderDetail({ order }) {
   if (!order) return <div className="container"><p>Not found</p></div>
 
@@ -25,13 +33,21 @@ export default function OrderDetail({ order }) {
   const typeInfo = orderTypeInfo[order.orderType] || null
   const stInfo = statusInfo[order.status] || null
 
+  const saga = sagaName(order.title)
+  const sagaWithAuthor = order.author ? `${saga} by ${order.author}` : saga
+  const seoTitle = `${sagaWithAuthor}: reading order | Reading with Matcha`
+  const seoDescription = `Reading order for ${sagaWithAuthor}.${order.description ? ` ${order.description}` : ''}`.replace(/\s+/g, ' ').trim()
+
   return (
     <>
       <Head>
-        <title>{order.title} — Reading Order · Reading with Matcha</title>
-        <meta name="description" content={`Reading order for ${order.title} by ${order.author}. ${order.description}`} />
-        <meta property="og:title" content={`${order.title} — Reading Order`} />
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
         {order.sagaCover && <meta property="og:image" content={order.sagaCover} />}
+        <meta name="twitter:card" content={order.sagaCover ? 'summary_large_image' : 'summary'} />
       </Head>
 
       <div className="container">
@@ -200,7 +216,7 @@ function BookCard({ book, index }) {
             </Link>
           )}
           {book.amazonLink && (
-            <a href={book.amazonLink} target="_blank" rel="noopener noreferrer" style={{ padding: '5px 12px', borderRadius: 6, background: '#fff8e7', border: '1px solid #f0c060', color: '#b07800', fontSize: 12, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
+            <a href={book.amazonLink} target="_blank" rel="sponsored noopener noreferrer" style={{ padding: '5px 12px', borderRadius: 6, background: '#fff8e7', border: '1px solid #f0c060', color: '#b07800', fontSize: 12, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
               Amazon
             </a>
           )}
