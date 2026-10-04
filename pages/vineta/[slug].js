@@ -9,16 +9,49 @@ const statusColors = {
   'Complete': { color: '#3a6a7a', bg: '#e4f0f5', border: '#aacfda' },
 }
 
+// Turns the plain text coming from Notion into real paragraphs.
+// Notion stores line breaks as \n and HTML collapses them, so they are split by hand.
+function Paragraphs({ text, style, gap = '1rem' }) {
+  const parts = String(text || '')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .split(/\n+/)
+    .map(p => p.trim())
+    .filter(Boolean)
+
+  if (parts.length === 0) return null
+
+  return (
+    <>
+      {parts.map((p, i) => (
+        <p key={i} style={{ ...style, margin: i === parts.length - 1 ? 0 : `0 0 ${gap}` }}>{p}</p>
+      ))}
+    </>
+  )
+}
+
+// Affiliate stores get rel="sponsored", as Google asks for affiliate links
+function linkRel(url) {
+  return /amazon\.|amzn\.to/i.test(String(url || '')) ? 'sponsored noopener noreferrer' : 'noopener noreferrer'
+}
+
 export default function ComicDetail({ comic }) {
   if (!comic) return <div className="container"><p>Not found</p></div>
   const st = statusColors[comic.status] || statusColors['Ongoing']
   const tags = Array.isArray(comic.tags) ? comic.tags : (comic.tags || '').split(',').map(t => t.trim()).filter(Boolean)
+  const kind = comicTypes[comic.comicType] || ''
+  const seoTitle = `${comic.title}: ${kind ? `${kind.toLowerCase()} review` : 'review'} | Reading with Matcha`
+  const seoDescription = (comic.synopsis || '').replace(/\s+/g, ' ').trim().slice(0, 160)
 
   return (
     <>
       <Head>
-        <title>{comic.title} — Reading with Matcha</title>
-        <meta name="description" content={comic.synopsis?.slice(0, 160)} />
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
+        <meta property="og:type" content="article" />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
+        {comic.cover && <meta property="og:image" content={comic.cover} />}
+        <meta name="twitter:card" content={comic.cover ? 'summary_large_image' : 'summary'} />
       </Head>
       <div className="container">
         <SiteHeader />
@@ -42,18 +75,18 @@ export default function ComicDetail({ comic }) {
 
           <div style={{ borderTop: '1px solid var(--v-border)', paddingTop: '1.5rem', marginBottom: '1.5rem' }}>
             <p style={{ fontSize: 11, fontFamily: 'sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: '0 0 0.75rem' }}>Synopsis</p>
-            <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.8 }}>{comic.synopsis}</p>
+            <Paragraphs text={comic.synopsis} style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.8 }} />
           </div>
 
           <div style={{ background: 'var(--v-bg)', border: '1px solid var(--v-border)', borderRadius: 12, padding: '1.25rem 1.5rem', marginBottom: '1.5rem' }}>
             <p style={{ fontSize: 11, fontFamily: 'sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: '0 0 0.75rem' }}>My review</p>
-            <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.85, fontStyle: 'italic' }}>{comic.review}</p>
+            <Paragraphs text={comic.review} style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.85, fontStyle: 'italic' }} gap="1.1rem" />
           </div>
 
           {comic.buyLink && (
             <div style={{ marginBottom: '1.5rem' }}>
               <p style={{ fontSize: 11, fontFamily: 'sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: '0 0 0.75rem' }}>Where to read it?</p>
-              <a href={comic.buyLink} target="_blank" rel="noopener noreferrer" style={{ padding: '8px 16px', borderRadius: 8, background: '#e7f5ff', border: '1px solid #60a0d0', color: '#0060a0', fontSize: 13, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>View platform</a>
+              <a href={comic.buyLink} target="_blank" rel={linkRel(comic.buyLink)} style={{ padding: '8px 16px', borderRadius: 8, background: '#e7f5ff', border: '1px solid #60a0d0', color: '#0060a0', fontSize: 13, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>View platform</a>
             </div>
           )}
         </div>
@@ -66,7 +99,7 @@ export default function ComicDetail({ comic }) {
 
 export async function getStaticPaths() {
   const comics = await getComics()
-  return { paths: comics.map(v => ({ params: { slug: v.slug } })), fallback: true }
+  return { paths: comics.map(v => ({ params: { slug: v.slug } })), fallback: 'blocking' }
 }
 
 export async function getStaticProps({ params }) {
