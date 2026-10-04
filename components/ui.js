@@ -13,12 +13,25 @@ export function Stars({ n, size = 13 }) {
   )
 }
 
-export function Pill({ children, bg, color, border }) {
+// One color per subgenre. The key is the Notion category in lowercase.
+// Use <Pill cat>...</Pill> to color a category pill.
+const CAT_COLORS = {
+  'dark romance':         { bg: '#e7d0d6', color: '#67323f' },
+  'romantasy':            { bg: '#e0d0e7', color: '#573267' },
+  'mafia romance':        { bg: '#e7d9d0', color: '#674832' },
+  'mafia':                { bg: '#e7d9d0', color: '#674832' },
+  'contemporary romance': { bg: '#d0e7d3', color: '#326739' },
+  'alien romance':        { bg: '#d0e2e7', color: '#325b67' },
+  'monsters':             { bg: '#d0e2e7', color: '#325b67' },
+}
+
+export function Pill({ children, bg, color, border, cat }) {
+  const c = cat ? CAT_COLORS[String(children ?? '').trim().toLowerCase()] : null
   return (
     <span style={{
-      background: bg || 'var(--bg-tag)',
-      color: color || 'var(--text-accent)',
-      border: `1px solid ${border || 'var(--border)'}`,
+      background: bg || (c ? c.bg : 'var(--bg-tag)'),
+      color: color || (c ? c.color : 'var(--text-accent)'),
+      border: `1px solid ${border || (c ? 'transparent' : 'var(--border)')}`,
       fontSize: 11, padding: '2px 10px',
       borderRadius: 20, fontFamily: 'sans-serif',
       whiteSpace: 'nowrap', display: 'inline-block',
@@ -65,18 +78,10 @@ export function SiteHeader() {
         Reviews · Matcha · Recommendations
       </p>
       <Link href="/">
-        <h1 style={{ fontSize: 'clamp(28px,6vw,46px)', fontWeight: 700, margin: '0 0 1rem', lineHeight: 1.2, color: 'var(--text-dark)', cursor: 'pointer' }}>
+        <h1 style={{ fontSize: 'clamp(28px,6vw,46px)', fontWeight: 700, margin: 0, lineHeight: 1.2, color: 'var(--text-dark)', whiteSpace: 'nowrap', cursor: 'pointer' }}>
           Reading <span style={{ color: 'var(--text-accent)' }}>with Matcha</span>
         </h1>
       </Link>
-      <p style={{ fontSize: 17, color: 'var(--text-body)', maxWidth: 480, margin: '0 auto 1.5rem', lineHeight: 1.75, fontStyle: 'italic' }}>
-        A personal space where I share what I love, what moves me, and what I would recommend without hesitation.
-      </p>
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-        {['Reviews', 'Graphic Reads', 'The Corner', 'Reading Order'].map(t => (
-          <span key={t} style={{ background: 'var(--bg-tag)', color: 'var(--text-accent)', fontSize: 12, padding: '4px 14px', borderRadius: 20, fontFamily: 'sans-serif', border: '1px solid var(--border)' }}>{t}</span>
-        ))}
-      </div>
     </div>
   )
 }
@@ -84,13 +89,13 @@ export function SiteHeader() {
 export function Profile() {
   return (
     <div className="perfil-grid">
-      <div style={{ width: 120, height: 120, borderRadius: '50%', border: '2px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}>
+      <div style={{ width: 135, height: 135, borderRadius: '50%', border: '3px solid var(--border)', overflow: 'hidden', flexShrink: 0 }}>
         <img src="https://i.ibb.co/PsGG8NnG/172269ad-6c7b-429b-b6e4-164d44ec2c48.jpg" alt="Ari" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
       </div>
       <div>
         <h2 style={{ fontSize: 20, fontWeight: 700, margin: '0 0 0.5rem', color: 'var(--text-dark)' }}>Hi, I'm Ari</h2>
         <p style={{ fontSize: 15, color: 'var(--text-body)', lineHeight: 1.75, margin: '0 0 1rem' }}>
-          I read in the margins of the day — before work, on trips, sometimes late into the night. I'm drawn to stories that make my heart race and change how I see things. Here I write honestly about what I read: what I loved, what challenged me, and what I'd read all over again. Always with a matcha nearby.
+          Welcome to my reading blog. I love reading, and having a space to share it is something I truly enjoy. Here you'll find romance books with all kinds of tropes, but always with a little spice and, of course, a happy ending. Every book here is one I loved in some way, and I hope you find your next read.
         </p>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           {socialLinks.map(s => <SocialBtn key={s.label} {...s} />)}
