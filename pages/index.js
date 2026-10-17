@@ -45,6 +45,8 @@ const catFilterColors = {
   'contemporary romance': { bg: '#d0e7d3', color: '#326739' },
   'alien romance':        { bg: '#d0e2e7', color: '#325b67' },
   'monsters':             { bg: '#d0e2e7', color: '#325b67' },
+  'alien / sci-fi romance': { bg: '#d0e2e7', color: '#325b67' },
+  'alien/sci-fi romance': { bg: '#d0e2e7', color: '#325b67' },
 }
 const catFilterFallback = { bg: '#eae4d8', color: '#6b5b45' }
 
