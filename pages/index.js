@@ -114,7 +114,7 @@ function tagList(item) {
   return Array.isArray(item.tags) ? item.tags : (item.tags || '').split(',').map(t => t.trim()).filter(Boolean)
 }
 
-export default function Home({ books, comics, corner, reading, orders }) {
+export default function Home({ books, comics, corner, reading, orders, amazonFavorites = [] }) {
   const [activeCat, setActiveCat] = useState('all')
   const [activeSub, setActiveSub] = useState(null)
   const [activeStatus, setActiveStatus] = useState(null)
@@ -323,10 +323,9 @@ export default function Home({ books, comics, corner, reading, orders }) {
           </div>
         </div>
 
-        <div className="afiliados-banner">
-          <p style={{ fontSize: 11, color: 'var(--text-muted)', margin: '0 0 4px', fontFamily: 'sans-serif', letterSpacing: '0.1em', textTransform: 'uppercase' }}>Affiliates</p>
-          <p style={{ fontSize: 14, color: 'var(--text-body)', margin: 0, fontStyle: 'italic' }}>Buy the books I recommend on Amazon</p>
-        </div>
+        {/* Affiliates: what I read with + my Amazon favorites */}
+        <WhatIReadWith />
+        <AmazonFavorites books={amazonFavorites} />
 
         <Newsletter />
         <Footer />
@@ -721,10 +720,107 @@ function Pagination({ page, totalPages, total, goToPage }) {
   )
 }
 
+// ─── Affiliates ───────────────────────────────────────────────────────────────
+// Products in "What I read with". These links don't come from Notion, so
+// lib/notion.js doesn't tag them: the tag is added here.
+// deal: true shows the "Black Friday deal" label. No price, per the Amazon
+// Associates rules. When the deal ends, set it to false.
+const AMAZON_TAG = 'entreletrasym-20'
+const withTag = asin => `https://www.amazon.com/dp/${asin}?tag=${AMAZON_TAG}`
+
+const READING_GEAR = [
+  { name: 'Kindle Colorsoft', asin: 'B0CX8MT2M2', deal: true,
+    line: 'Where I read every one of these stories, with the covers in color.' },
+  { name: 'Clear case', asin: 'B0FHHJQ68J', deal: false,
+    line: 'Protects it without hiding the pretty part, and shows off the stickers.' },
+  { name: 'Stickers to decorate it', asin: 'B0FVL5DWLV', deal: false,
+    line: 'So my Kindle looks like me.' },
+]
+
+const amazonBtn = {
+  fontFamily: 'sans-serif', fontSize: 13, fontWeight: 500, textDecoration: 'none', textAlign: 'center',
+  padding: '10px 14px', borderRadius: 8, background: '#fff8e7', border: '1px solid #f0c060', color: '#8a5a00',
+}
+const sectionLabel = { margin: 0, fontFamily: 'sans-serif', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase' }
+
+function WhatIReadWith() {
+  return (
+    <section aria-labelledby="gear-title" style={{ margin: '2rem 0 0', background: 'var(--bg-dark)', borderRadius: 14, padding: '26px 24px', display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <p style={{ ...sectionLabel, color: 'var(--text-lighter)' }}>Affiliates</p>
+        <h2 id="gear-title" style={{ margin: 0, fontSize: 23, fontWeight: 'normal', color: 'var(--text-light)' }}>What I read with</h2>
+        <p style={{ margin: 0, fontSize: 15, fontStyle: 'italic', color: '#c9d3c2' }}>My Kindle and what I added to make it mine.</p>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(240px, 100%), 1fr))', gap: 14 }}>
+        {READING_GEAR.map(p => (
+          <article key={p.asin} style={{ background: '#343b32', border: '1px solid #454e42', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {p.deal && (
+              <span style={{ alignSelf: 'flex-start', fontFamily: 'sans-serif', fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '4px 8px', borderRadius: 4, background: '#b3263a', color: '#fff' }}>
+                Black Friday deal
+              </span>
+            )}
+            <h3 style={{ margin: 0, fontSize: 17, fontWeight: 'normal', color: 'var(--text-light)' }}>{p.name}</h3>
+            <p style={{ margin: 0, fontSize: 14, fontStyle: 'italic', lineHeight: 1.4, color: '#c9d3c2', flex: 1 }}>{p.line}</p>
+            <a href={withTag(p.asin)} target="_blank" rel="sponsored noopener noreferrer" style={{ ...amazonBtn, alignSelf: 'flex-start', marginTop: 4 }}>
+              See on Amazon
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+function AmazonFavorites({ books }) {
+  if (!books || !books.length) return null
+  return (
+    <section aria-labelledby="amazon-favs-title" style={{ margin: '1.5rem 0 2rem', background: '#f7f6f3', border: '1px solid #e4e0d6', borderRadius: 14, padding: '26px 24px 20px', display: 'flex', flexDirection: 'column', gap: 20 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+        <p style={{ ...sectionLabel, color: 'var(--text-accent)' }}>Affiliates</p>
+        <h2 id="amazon-favs-title" style={{ margin: 0, fontSize: 23, fontWeight: 'normal', color: 'var(--text-dark)' }}>My Amazon favorites</h2>
+        <p style={{ margin: 0, fontSize: 15, fontStyle: 'italic', color: 'var(--text-body)' }}>My all-time five stars, ready to take home.</p>
+      </div>
+      {/* 4 books in one row on desktop; 2x2 on phones. */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, max(150px, 22%)), 1fr))', gap: 12 }}>
+        {books.map(book => (
+          <article key={book.id} style={{ background: 'var(--bg-card)', border: '1px solid #e4e0d6', borderRadius: 12, padding: 12, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6, textAlign: 'center' }}>
+            {book.cover && (
+              <img src={book.cover} alt={book.title} loading="lazy"
+                style={{ width: 96, height: 144, objectFit: 'cover', borderRadius: 6, marginBottom: 4, boxShadow: '0 2px 6px rgba(37,46,35,0.18)' }} />
+            )}
+            {book.category && <Pill cat>{book.category}</Pill>}
+            <h3 style={{ margin: 0, fontSize: 15, fontWeight: 'normal', lineHeight: 1.25, color: 'var(--text-dark)' }}>{book.title}</h3>
+            <p style={{ margin: 0, fontFamily: 'sans-serif', fontSize: 12, color: '#305435' }}>{book.author}</p>
+            {book.rating ? <Stars n={book.rating} /> : null}
+            <a href={book.amazonLink} target="_blank" rel="sponsored noopener noreferrer" style={{ ...amazonBtn, alignSelf: 'stretch', marginTop: 'auto', padding: '9px 10px' }}>
+              See on Amazon
+            </a>
+            <Link href={`/resena/${book.slug}`} style={{ fontFamily: 'sans-serif', fontSize: 12, color: 'var(--text-body)', textDecoration: 'underline', textUnderlineOffset: 3, padding: '8px 4px 2px' }}>
+              My review
+            </Link>
+          </article>
+        ))}
+      </div>
+      <p style={{ margin: 0, textAlign: 'center', fontFamily: 'sans-serif', fontSize: 11, color: '#6b7d64' }}>
+        Affiliate links: if you buy through them, I earn a small commission at no extra cost to you.
+      </p>
+    </section>
+  )
+}
+
 export async function getStaticProps() {
   const { books, comics, corner, reading, orders } = await getAll()
+  // 4 random favorites that have an Amazon link. Picked here (not in the
+  // browser) so the server and the page show the same books. They change
+  // every time the site regenerates.
+  const candidates = books.filter(b => b.favorite && b.amazonLink)
+  for (let i = candidates.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[candidates[i], candidates[j]] = [candidates[j], candidates[i]]
+  }
+  const amazonFavorites = candidates.slice(0, 4)
   return {
-    props: { books, comics, corner, reading, orders },
+    props: { books, comics, corner, reading, orders, amazonFavorites },
     revalidate: 60,
   }
 }
