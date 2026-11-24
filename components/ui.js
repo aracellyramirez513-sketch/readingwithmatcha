@@ -206,8 +206,11 @@ export function Newsletter() {
 
 export function Footer() {
   return (
-    <p style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', marginTop: '2rem', fontFamily: 'sans-serif' }}>
-      Reading with Matcha · Made with love by Ari
-    </p>
+    <footer style={{ textAlign: 'center', fontSize: 12, color: 'var(--text-muted)', marginTop: '2rem', fontFamily: 'sans-serif' }}>
+      <p style={{ margin: 0 }}>Reading with Matcha · Made with love by Ari</p>
+      <p style={{ margin: '6px 0 0', fontSize: 11, opacity: 0.85 }}>
+        As an Amazon Associate I earn from qualifying purchases.
+      </p>
+    </footer>
   )
 }
