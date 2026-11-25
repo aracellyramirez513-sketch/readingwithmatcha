@@ -238,15 +238,28 @@ export default function BookDetail({ book, context }) {
             </div>
           )}
 
-          {book.amazonLink && (
-            <div style={{ marginBottom: '1.5rem' }}>
-              <p style={{ fontSize: 11, fontFamily: 'sans-serif', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', margin: '0 0 0.75rem' }}>Where to buy it?</p>
-              <a href={book.amazonLink} target="_blank" rel="sponsored noopener noreferrer"
-                style={{ padding: '8px 16px', borderRadius: 8, background: '#fff8e7', border: '1px solid #f0c060', color: '#b07800', fontSize: 13, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
-                Amazon
-              </a>
-            </div>
-          )}
+          {(() => {
+            const stores = [
+              { link: book.amazonLink, name: 'Amazon', detail: 'Kindle & paperback', border: '#e0b800', color: '#806800', soft: '#a08a40', icon: 'cart' },
+              { link: book.koboLink,   name: 'Kobo',   detail: 'ebook',              border: '#d4537e', color: '#72243e', soft: '#993556', icon: 'tablet' },
+            ].filter(s => s.link)
+            if (!stores.length) return null
+            return (
+              <div style={{ background: '#edf4e8', border: '1px solid var(--border)', borderRadius: 12, padding: '1.25rem 1.5rem', marginBottom: '1.5rem' }}>
+                <h2 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 700, color: 'var(--text-dark)', margin: '0 0 1rem' }}>Where to buy it?</h2>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 12 }}>
+                  {stores.map(s => (
+                    <a key={s.name} href={s.link} target="_blank" rel="sponsored noopener noreferrer"
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', flexWrap: 'wrap', gap: 8, padding: '14px 16px', borderRadius: 10, background: '#ffffff', border: `1.5px solid ${s.border}`, color: s.color, fontSize: 15, fontFamily: 'sans-serif', fontWeight: 600, textDecoration: 'none', textAlign: 'center' }}>
+                      <StoreIcon type={s.icon} />
+                      <span>{s.name}</span>
+                      <span style={{ fontSize: 12, fontWeight: 400, color: s.soft }}>· {s.detail}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )
+          })()}
 
           {/* Series navigation */}
           <SeriesNav context={context} />
@@ -276,4 +289,11 @@ export async function getStaticProps({ params }) {
   }
 
   return { props: { book, context }, revalidate: 60 }
+}
+
+// Simple line icons for the "Where to buy it?" buttons
+function StoreIcon({ type, size = 19 }) {
+  const props = { width: size, height: size, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true, style: { flexShrink: 0 } }
+  if (type === 'tablet') return <svg {...props}><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M11 17h2" /></svg>
+  return <svg {...props}><circle cx="9" cy="20" r="1.3" /><circle cx="18" cy="20" r="1.3" /><path d="M3 4h2l2.2 11h11.3L21 8H6.2" /></svg>
 }
