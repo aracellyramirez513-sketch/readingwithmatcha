@@ -34,7 +34,20 @@ function isInternal(url) {
 
 function isAffiliate(url) {
   const u = String(url || '').toLowerCase()
-  return u.includes('amazon.') || u.includes('amzn.')
+  return !!storeOf(url)
+}
+
+// Recognizes the store from the link
+const STORES = {
+  amazon: { name: 'Amazon', border: '#e0b800', color: '#806800', icon: 'cart' },
+  kobo:   { name: 'Kobo',   border: '#d4537e', color: '#72243e', icon: 'tablet' },
+}
+
+function storeOf(url) {
+  const u = String(url || '').toLowerCase()
+  if (u.includes('amazon.') || u.includes('amzn.')) return STORES.amazon
+  if (u.includes('kobo.com')) return STORES.kobo
+  return null
 }
 
 // External links open in a new tab. Store links carry rel="sponsored",
@@ -50,10 +63,10 @@ function linkProps(url) {
 function storeLabel(url) {
   const u = String(url || '').toLowerCase()
   if (isInternal(url)) return 'Read my review'
-  if (u.includes('amazon.') || u.includes('amzn.')) return 'See on Amazon'
+  const store = storeOf(url)
+  if (store) return store.name
   if (u.includes('books.apple.com')) return 'Apple Books'
   if (u.includes('play.google.com')) return 'Google Play'
-  if (u.includes('kobo.com')) return 'Kobo'
   if (u.includes('goodreads')) return 'Goodreads'
   try { return new URL(url).hostname.replace(/^www\./, '') } catch (e) { return 'See link' }
 }
@@ -180,29 +193,32 @@ function Text({ segs, et }) {
 function Buttons({ links, et }) {
   if (!links.length) return null
   return (
-    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', margin: '10px 0 4px' }}>
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', margin: '10px 0 4px' }}>
       {links.map((l, i) => {
-        const primary = i === 0
+        const store = storeOf(l.url)
+        const internal = isInternal(l.url)
+        const base = { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', borderRadius: 8, fontSize: 13, fontFamily: 'sans-serif', fontWeight: 500, textDecoration: 'none' }
+        const style = store
+          ? { ...base, background: '#ffffff', border: `1.5px solid ${store.border}`, color: store.color }
+          : internal
+            ? { ...base, background: et.color, border: `1px solid ${et.color}`, color: '#fff' }
+            : { ...base, background: '#ffffff', border: `1px solid ${et.border}`, color: et.color }
         return (
-          <a key={i} href={l.url} {...linkProps(l.url)}
-            style={{
-              display: 'inline-block',
-              padding: '7px 14px',
-              borderRadius: 8,
-              fontSize: 13,
-              fontFamily: 'sans-serif',
-              fontWeight: 500,
-              textDecoration: 'none',
-              border: `1px solid ${primary ? et.color : et.border}`,
-              background: primary ? et.color : '#fff',
-              color: primary ? '#fff' : et.color,
-            }}>
-            {l.text} {isInternal(l.url) ? '→' : '↗'}
+          <a key={i} href={l.url} {...linkProps(l.url)} style={style}>
+            {store && <StoreIcon type={store.icon} />}
+            {l.text} {internal ? '→' : '↗'}
           </a>
         )
       })}
     </div>
   )
+}
+
+// Simple line icons for the store buttons
+function StoreIcon({ type }) {
+  const props = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true, style: { flexShrink: 0 } }
+  if (type === 'tablet') return <svg {...props}><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M11 17h2" /></svg>
+  return <svg {...props}><circle cx="9" cy="20" r="1.3" /><circle cx="18" cy="20" r="1.3" /><path d="M3 4h2l2.2 11h11.3L21 8H6.2" /></svg>
 }
 
 const paragraphStyle = { fontSize: 16, color: 'var(--text-body)', lineHeight: 1.85, margin: '0 0 1rem', whiteSpace: 'pre-wrap' }
