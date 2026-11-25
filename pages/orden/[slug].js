@@ -211,15 +211,20 @@ function BookCard({ book, index }) {
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
           {book.reviewSlug && (
-            <Link href={`/resena/${book.reviewSlug}`} style={{ padding: '6px 14px', borderRadius: 6, background: 'var(--btn-bg)', color: '#fff', fontSize: 12, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
+            <Link href={`/resena/${book.reviewSlug}`} style={{ padding: '8px 14px', borderRadius: 8, background: 'var(--btn-bg)', color: '#fff', fontSize: 13, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
               Read full review →
             </Link>
           )}
-          {book.amazonLink && (
-            <a href={book.amazonLink} target="_blank" rel="sponsored noopener noreferrer" style={{ padding: '5px 12px', borderRadius: 6, background: '#fff8e7', border: '1px solid #f0c060', color: '#b07800', fontSize: 12, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
-              Amazon
+          {[
+            { link: book.amazonLink, name: 'Amazon', border: '#e0b800', color: '#806800', icon: 'cart' },
+            { link: book.koboLink,   name: 'Kobo',   border: '#d4537e', color: '#72243e', icon: 'tablet' },
+          ].filter(s => s.link).map(s => (
+            <a key={s.name} href={s.link} target="_blank" rel="sponsored noopener noreferrer"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 12px', borderRadius: 8, background: '#ffffff', border: `1.5px solid ${s.border}`, color: s.color, fontSize: 13, fontFamily: 'sans-serif', textDecoration: 'none', fontWeight: 500 }}>
+              <StoreIcon type={s.icon} />
+              {s.name}
             </a>
-          )}
+          ))}
         </div>
       </div>
     </div>
@@ -238,4 +243,11 @@ export async function getStaticProps({ params }) {
   const order = await getOrder(params.slug)
   if (!order) return { notFound: true }
   return { props: { order }, revalidate: 60 }
+}
+
+// Simple line icons for the store buttons
+function StoreIcon({ type }) {
+  const props = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true, style: { flexShrink: 0 } }
+  if (type === 'tablet') return <svg {...props}><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M11 17h2" /></svg>
+  return <svg {...props}><circle cx="9" cy="20" r="1.3" /><circle cx="18" cy="20" r="1.3" /><path d="M3 4h2l2.2 11h11.3L21 8H6.2" /></svg>
 }
